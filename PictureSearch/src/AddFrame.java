@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.util.ArrayList;
 import java.awt.*;
 import javax.swing.border.*;
 import java.awt.event.ActionEvent;
@@ -15,7 +16,10 @@ public class AddFrame extends JFrame {
 	private PictureList pictureList;
 	private PictureListPanel pictureListPanel;
 	
-	
+	// 나중을 정보 활용을 위해 stuff 패널은 arraylist로 관리한다
+	private ArrayList<JPanel> stuffPanels = new ArrayList<JPanel>();
+    
+	// 생성자
 	public AddFrame(PictureList pictureList, PictureListPanel pictureListPanel) {
 		this.pictureList = pictureList;
 		this.pictureListPanel = pictureListPanel;
@@ -58,49 +62,15 @@ public class AddFrame extends JFrame {
 		 
 		 
 		 // stuff
-		 JPanel stuffPanel = new JPanel();
-		 stuffPanel.setLayout(new GridBagLayout());
-		 stuffPanel.setBorder(new LineBorder(Color.BLACK));
-	     GridBagConstraints gbc = new GridBagConstraints();
-	     gbc.insets = new Insets(5, 5, 5, 5);
-	     gbc.fill = GridBagConstraints.BOTH;
-
-		 JLabel typeLabel = new JLabel("Type");
-		 JTextField type = new JTextField();
-		 JLabel nameLabel = new JLabel("Name");
-		 JTextField name = new JTextField();
-		 JLabel tagLabel = new JLabel("Tags");
-		 JTextField tags = new JTextField();
-		 
-		 gbc.gridx = 0;
-	     gbc.gridy = 0;
-	     gbc.weightx = 0.1;
-	     stuffPanel.add(typeLabel, gbc);
-
-	     gbc.gridx = 1;
-	     gbc.weightx = 0.9;
-	     stuffPanel.add(type, gbc);
-
-	     gbc.gridx = 0;
-	     gbc.gridy = 1;
-	     gbc.weightx = 0.1;
-	     stuffPanel.add(nameLabel, gbc);
-
-	     gbc.gridx = 1;
-	     gbc.weightx = 0.9;
-	     stuffPanel.add(name, gbc);
-
-	     gbc.gridx = 0;
-	     gbc.gridy = 2;
-	     gbc.weightx = 0.2;
-	     stuffPanel.add(tagLabel, gbc);
-
-	     gbc.gridx = 1;
-	     gbc.weightx = 0.8;
-	     stuffPanel.add(tags, gbc);
-		 
-		 centerPanel.add(stuffPanel, BorderLayout.CENTER);
+	     // stuff 정보란
+	     JPanel stuffPanelContainer = new JPanel();
+	     stuffPanelContainer.setLayout(new GridLayout(0,1));
+	     
+	     addNewStuffPanel(stuffPanelContainer);
+	     
+		 centerPanel.add(stuffPanelContainer, BorderLayout.CENTER);
 		 add(centerPanel, BorderLayout.CENTER);
+		 
 		 
 		 // southPanel
 		 JPanel southPanel = new JPanel();
@@ -124,6 +94,7 @@ public class AddFrame extends JFrame {
 	     buttonPanel.setLayout(new BorderLayout());
 
 		 JButton moreStuffBtn = new JButton("More Stuff");
+		 moreStuffBtn.addActionListener(new moreStuffBtnListener(stuffPanelContainer));
 		 
 		 // input end button
 		 JButton okBtn = new JButton("OK-INPUT END");
@@ -138,12 +109,62 @@ public class AddFrame extends JFrame {
 
 		 
 		 setVisible(true);
-
-		
 	}
-}
+	
+    public ArrayList<JPanel> getStuffPanels(){
+    	return this.stuffPanels;
+    }
+	
+	public void addNewStuffPanel(JPanel stuffPanelContainer) {
+		JPanel newPanel = new JPanel();
+		newPanel.setLayout(new GridBagLayout());
+		newPanel.setBorder(new LineBorder(Color.BLACK));
+	    GridBagConstraints gbc = new GridBagConstraints();
+	    gbc.insets = new Insets(5, 5, 5, 5);
+	    gbc.fill = GridBagConstraints.BOTH;
+	     
+        JLabel typeLabel = new JLabel("Type");
+		JTextField type = new JTextField();
+		JLabel nameLabel = new JLabel("Name");
+		JTextField name = new JTextField();
+		JLabel tagLabel = new JLabel("Tags");
+		JTextField tags = new JTextField();
+		tags.setName("tags"); // 앞에 # 를 붙여야함으로 이름을 통해 구별한다
+			 
+	    gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weightx = 0.1;
+		newPanel.add(typeLabel, gbc);
 
-class imageBtnListener implements ActionListener{
+		gbc.gridx = 1;
+		gbc.weightx = 0.9;
+		newPanel.add(type, gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.weightx = 0.1;
+		newPanel.add(nameLabel, gbc);
+
+		gbc.gridx = 1;
+		gbc.weightx = 0.9;
+		newPanel.add(name, gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		gbc.weightx = 0.2;
+		newPanel.add(tagLabel, gbc);
+
+		gbc.gridx = 1;
+		gbc.weightx = 0.8;
+		newPanel.add(tags, gbc);
+		
+		stuffPanels.add(newPanel);
+		stuffPanelContainer.add(newPanel);
+	}
+	
+	// 내부클래스 이벤트 리스너
+
+private class imageBtnListener implements ActionListener{
 	private File selectedFile;
 	
 	public void actionPerformed(ActionEvent e) {
@@ -175,7 +196,7 @@ class imageBtnListener implements ActionListener{
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss:SSS");
 		String imageId = now.format(formatter);
 	
-		imageInfoLine += "IMG" + imageId + ";";
+		imageInfoLine += "IMG" + imageId + "; ";
 		
 		// image filename 생성
 		String path = this.selectedFile.getPath();
@@ -183,13 +204,9 @@ class imageBtnListener implements ActionListener{
 		
 		return imageInfoLine;
 	}
-	
-	public File getSelectedFile() {
-		return this.selectedFile;
-	}
 }
 
-class okBtnListener implements ActionListener{
+private class okBtnListener implements ActionListener{
 	private JTextField timefield;
 	private imageBtnListener imageBtnListener;
 	private JTextField commentfield;
@@ -222,12 +239,36 @@ class okBtnListener implements ActionListener{
 		// image
 		line += "<" + this.imageBtnListener.makeImageInfo() + ">";
 		
-		// stuff 나중에 추가!!!!!!!!!!!!!!!!!!
-		line += "<" + "> ";
-	
+		// stuff 
+		line += "< ";
+		
+		for(JPanel stuffpanel :getStuffPanels()) {
+			line += "[";
+			Component[] components = stuffpanel.getComponents();
+			// stuff 정보란 component를 찾는다
+			for(Component target :components) {
+				if(target != null && target instanceof JTextField) {
+					line += ";";
+					JTextField textField = (JTextField) target;
+					String str = "";
+					if(textField.getName() != null && textField.getName().equals("tags")) {
+						str += "#";
+					}
+					str += textField.getText();
+					line += str;
+				}
+				else {
+					line += "";
+				}
+			}
+			line += "]";
+		}
+		line += " >";
+			
+			
 		// picturetag
 		String pictureTag = this.tagsfield.getText();
-		line += "<" + pictureTag + "> ";
+		line += "< #" + pictureTag + "> ";
 		
 		// comment
 		String comment = this.commentfield.getText();
@@ -237,6 +278,7 @@ class okBtnListener implements ActionListener{
 		try {
 			FileWriter fw = new FileWriter("src/picture-normal.data", true);
 			PrintWriter pw = new PrintWriter(fw);
+			pw.println();
 			pw.println(line);
 			
 			// flush 해서 변경사항 반영
@@ -247,11 +289,34 @@ class okBtnListener implements ActionListener{
 		}
 		
 		// 메인화면 갱신
-		//this.pictureList.setFilename("src/picture-normal.data"); 
-		//this.pictureList.updatePictureList();
-		//this.pictureListPanel.updatePanel();
+		this.pictureList.setFilename("src/picture-normal.data"); 
+		this.pictureList.updatePictureList();
+		this.pictureListPanel.updatePanel();
 		
 		// frame 닫기
+		dispose();
 	}
 	
 }
+
+private class moreStuffBtnListener implements ActionListener{
+	
+	private JPanel stuffPanelContainer;
+	
+	public moreStuffBtnListener(JPanel stuffPanelContainer) {
+		this.stuffPanelContainer =stuffPanelContainer;
+	}
+	public void actionPerformed(ActionEvent e) {
+				
+		// stuff 란 추가
+		addNewStuffPanel(this.stuffPanelContainer);
+		
+		// 재구성
+		revalidate();
+		repaint();
+		}
+	}
+}
+
+
+

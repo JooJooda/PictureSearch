@@ -63,12 +63,13 @@ public class PictureFrame extends JFrame{
 		setVisible(true);
 
 	}
-}
+	
+	// 내부 클래스 이벤트 리스너
 
-class AddListener implements ActionListener{
+private class AddListener implements ActionListener{
 	// 멤버변수
-	PictureList pictureList;
-    PictureListPanel pictureListPanel;
+	private PictureList pictureList;
+    private PictureListPanel pictureListPanel;
 	
 	// 생성자
 	public AddListener(PictureList pictureList, PictureListPanel pictureListPanel) {
@@ -81,13 +82,13 @@ class AddListener implements ActionListener{
 	}
 }
 
-class SearchListener implements ActionListener{
+private class SearchListener implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		new SearchFrame();
 	}
 }
 
-class SaveListener implements ActionListener{
+private class SaveListener implements ActionListener{
 	
 	// 멤버변수
 	private PictureList pictureList;
@@ -102,11 +103,11 @@ class SaveListener implements ActionListener{
 	}
 }
 
-class LoadListener implements ActionListener{
+private class LoadListener implements ActionListener{
 	
 	// 멤버변수
 	private PictureList pictureList;
-	PictureListPanel pictureListPanel;
+	private PictureListPanel pictureListPanel;
 	
 	// 생성자
 	public LoadListener(PictureList picturelist, PictureListPanel picturelistpanel) {
@@ -121,4 +122,7 @@ class LoadListener implements ActionListener{
 		this.pictureList.updatePictureList();
 		this.pictureListPanel.updatePanel();	
 	}
+}
+
+	
 }
