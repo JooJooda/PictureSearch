@@ -8,6 +8,7 @@ public class PictureFrame extends JFrame{
 	// 멤버변수
 	private PictureList pictureList;
 	private PictureListPanel pictureListPanel;
+	private SearchFrame.SearchActionListener searchActionListener;
 	
 	// 생성자
 	public PictureFrame(PictureList picturelist) {
@@ -22,8 +23,9 @@ public class PictureFrame extends JFrame{
 		
 		
 		// show all pictures button panel
-		JButton showAllButton = new JButton("Show All Pictures");
-		add(showAllButton, BorderLayout.NORTH);
+		JButton showAllPictureBtn = new JButton("Show All Pictures");
+		showAllPictureBtn.addActionListener(new showAllPictureBtnListener()); 
+		add(showAllPictureBtn, BorderLayout.NORTH);
 		
 		// picture data panel
 		PictureListPanel picturelistpanel = new PictureListPanel(this.pictureList);
@@ -39,15 +41,15 @@ public class PictureFrame extends JFrame{
 		
 		JButton addButton = new JButton("Add");
 		// PictureList 인스턴스 레퍼런스를 넘겨준다
-		addButton.addActionListener(new AddListener(this.pictureList, this.pictureListPanel));
+		addButton.addActionListener(new AddListener());
 		
-		JButton deleteButton = new JButton("Delete");
+		JButton deleteButton = new JButton("Delete");  // delete 시 originalPictureList 도 업데이트 필요!!!!!!!!!!!
 		
 		JButton loadButton = new JButton("Load");
-		loadButton.addActionListener(new LoadListener(this.pictureList, this.pictureListPanel));
+		loadButton.addActionListener(new LoadListener());
 		
 		JButton saveButton = new JButton("Save");
-		saveButton.addActionListener(new SaveListener(this.pictureList));
+		saveButton.addActionListener(new SaveListener());
 		
 		
 		JButton searchButton = new JButton("Search");
@@ -64,63 +66,72 @@ public class PictureFrame extends JFrame{
 
 	}
 	
-	// 내부 클래스 이벤트 리스너
-
-private class AddListener implements ActionListener{
-	// 멤버변수
-	private PictureList pictureList;
-    private PictureListPanel pictureListPanel;
-	
-	// 생성자
-	public AddListener(PictureList pictureList, PictureListPanel pictureListPanel) {
-		this.pictureList = pictureList;
-		this.pictureListPanel = pictureListPanel;
+	public PictureList getPictureList() {
+		return this.pictureList;
 	}
 	
+	public PictureListPanel getPictureListPanel() {
+		return this.pictureListPanel;
+	}
+	
+	public SearchFrame.SearchActionListener getCommonActionListener() {
+		return this.searchActionListener;
+	}
+	
+	public void setCommonActionListener(SearchFrame.SearchActionListener searchActionListener) {
+		this.searchActionListener = searchActionListener;
+	}
+	
+	
+// 내부 클래스 이벤트 리스너
+private class showAllPictureBtnListener implements ActionListener{	
 	public void actionPerformed(ActionEvent e) {
-		new AddFrame(this.pictureList, this.pictureListPanel);
+		
+		PictureList pictureList = getPictureList();
+		
+		// 깉은 복사를 해두었던 pictureList 객체를 가르키도록 레퍼런스를 바꿔준다
+		pictureList.setPictureList(pictureList.getOriginalPictureList()); 
+		
+		// 그것을 기반으로 파일을 업데이트
+		pictureList.writeToFile("src/picture-normal.data");
+		pictureList.setFilename("src/picture-normal.data");
+		
+		// 화면 & picturelist 업데이트
+		pictureList.updatePictureList();
+		getPictureListPanel().updatePanel();
+		
+		// filteredPictureList 초기화
+		getCommonActionListener().initalizeFilteredPictureList();
 	}
 }
-
-private class SearchListener implements ActionListener{
+	
+private class AddListener implements ActionListener{	
 	public void actionPerformed(ActionEvent e) {
-		new SearchFrame();
+		new AddFrame(pictureList, pictureListPanel);
+	}
+}
+ 
+private class SearchListener implements ActionListener{	
+	public void actionPerformed(ActionEvent e) {
+		SearchFrame searchFrame = new SearchFrame(pictureList, pictureListPanel);
+		setCommonActionListener(searchFrame.getCommonActionListener());
 	}
 }
 
 private class SaveListener implements ActionListener{
-	
-	// 멤버변수
-	private PictureList pictureList;
-	
-	// 생성자
-	public SaveListener(PictureList picturelist) {
-		this.pictureList = picturelist;
-	}
-	
 	public void actionPerformed(ActionEvent e) {
-		this.pictureList.writeToFile("src/picture-output.data");
+		pictureList.writeToFile("src/picture-output.data");
 	}
 }
 
 private class LoadListener implements ActionListener{
-	
-	// 멤버변수
-	private PictureList pictureList;
-	private PictureListPanel pictureListPanel;
-	
-	// 생성자
-	public LoadListener(PictureList picturelist, PictureListPanel picturelistpanel) {
-		this.pictureList = picturelist;
-		this.pictureListPanel = picturelistpanel;
-	}
-	
 	public void actionPerformed(ActionEvent e) {
+		
 		// PictureList 객체 레퍼런스를 가지고 있으니 메소드 사용가능
 		// 다시 파일읽기를 하고 picturelist와 picturelistpanel을 업데이트
-		this.pictureList.setFilename("src/picture-normal.data"); 
-		this.pictureList.updatePictureList();
-		this.pictureListPanel.updatePanel();	
+		pictureList.setFilename("src/picture-normal.data"); 
+		pictureList.updatePictureList();
+		pictureListPanel.updatePanel();	
 	}
 }
 

@@ -71,7 +71,7 @@ public class Stuff{
     //원래 stuff 구조로 되돌리는 메소드
     String parseToLine(){
         String line = "[" + this.getId() + ";" +this.getSort() + ";" + this.getName() + ";" 
-    + this.getStuffTag() + ";" +"]";
+    + this.getStuffTag() +"]";
 
         return line;
     }

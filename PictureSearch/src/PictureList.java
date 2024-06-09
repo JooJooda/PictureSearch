@@ -10,19 +10,22 @@ public class PictureList {
     //멤버변수
 	private ArrayList<Picture> pictureList = new ArrayList<Picture>();
 	private String filename;
+	
+	// 기존 PictureList 객체의 pictureList를 저장해둔다
+	private ArrayList<Picture> originalPictureList = new ArrayList<Picture>();
 
     //생성자
     //인자로 파일이름을 주면 해당 파일에 기술된 사진 정보들로 리스트를 만드는 생성자
     PictureList(String filename){
       this.filename =filename;
       updatePictureList();
-     
+      this.originalPictureList.addAll(this.pictureList); // 깊은 복사 
     }
     
 
     //메소드
     // ArrayList pictureList를 업데이트하는 메소드
-    public void updatePictureList() {
+    public void updatePictureList() { 
     	this.pictureList.clear();
     	
     	FileManager file = new FileManager(this.getFilename());
@@ -139,6 +142,15 @@ public class PictureList {
     public void setFilename(String filename) {
         this.filename = filename;
     }
+    
+    public ArrayList<Picture> getOriginalPictureList(){
+    	return this.originalPictureList;
+    }
+    
+    public void setOriginalPictureList(ArrayList<Picture> newOriginalList) {
+    	this.originalPictureList = newOriginalList;
+    }
+    
 }
     
     

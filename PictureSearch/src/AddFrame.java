@@ -99,7 +99,7 @@ public class AddFrame extends JFrame {
 		 // input end button
 		 JButton okBtn = new JButton("OK-INPUT END");
 		 okBtn.addActionListener(new okBtnListener(timefield, imageBtnListener, commentfield, tagsfield, 
-				 this.pictureList, this.pictureListPanel));
+				  this.pictureList, this.pictureListPanel));
 		 
 		 buttonPanel.add(moreStuffBtn, BorderLayout.WEST);
 	     buttonPanel.add(okBtn, BorderLayout.EAST);
@@ -111,6 +111,7 @@ public class AddFrame extends JFrame {
 		 setVisible(true);
 	}
 	
+	// 메소드
     public ArrayList<JPanel> getStuffPanels(){
     	return this.stuffPanels;
     }
@@ -161,9 +162,8 @@ public class AddFrame extends JFrame {
 		stuffPanels.add(newPanel);
 		stuffPanelContainer.add(newPanel);
 	}
-	
-	// 내부클래스 이벤트 리스너
 
+// 내부클래스 이벤트 리스너
 private class imageBtnListener implements ActionListener{
 	private File selectedFile;
 	
@@ -215,7 +215,8 @@ private class okBtnListener implements ActionListener{
 	private PictureListPanel pictureListPanel;
 	
 	public okBtnListener(JTextField timefield, imageBtnListener imageBtnListener, 
-			JTextField commentfield, JTextField tagsfield, PictureList pictureList, PictureListPanel pictureListPanel) {
+			JTextField commentfield, JTextField tagsfield, 
+			PictureList pictureList, PictureListPanel pictureListPanel) {
 		this.timefield = timefield;
 		this.imageBtnListener = imageBtnListener;
 		this.commentfield = commentfield;
@@ -251,9 +252,9 @@ private class okBtnListener implements ActionListener{
 					line += ";";
 					JTextField textField = (JTextField) target;
 					String str = "";
-					if(textField.getName() != null && textField.getName().equals("tags")) {
+					if(textField.getName() != null && textField.getName().equals("tags") && !textField.getText().trim().isEmpty()) {
 						str += "#";
-					}
+					} 
 					str += textField.getText();
 					line += str;
 				}
@@ -268,7 +269,13 @@ private class okBtnListener implements ActionListener{
 			
 		// picturetag
 		String pictureTag = this.tagsfield.getText();
-		line += "< #" + pictureTag + "> ";
+		
+		line += " <";
+		if(!pictureTag.isEmpty()) {
+			line += "#" + pictureTag;
+		}
+		
+		line += ">";
 		
 		// comment
 		String comment = this.commentfield.getText();
@@ -291,12 +298,14 @@ private class okBtnListener implements ActionListener{
 		// 메인화면 갱신
 		this.pictureList.setFilename("src/picture-normal.data"); 
 		this.pictureList.updatePictureList();
+		this.pictureList.setOriginalPictureList(pictureList.getPictureList()); // add 시 originalPictureList도 업데이트 해준다
 		this.pictureListPanel.updatePanel();
 		
 		// frame 닫기
 		dispose();
 	}
 	
+
 }
 
 private class moreStuffBtnListener implements ActionListener{
@@ -314,9 +323,9 @@ private class moreStuffBtnListener implements ActionListener{
 		// 재구성
 		revalidate();
 		repaint();
-		}
 	}
 }
 
+}
 
 
